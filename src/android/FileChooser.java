@@ -85,7 +85,7 @@ public class FileChooser extends CordovaPlugin {
 
                 callback.success(file.getName(), s)
               }catch(Exception e){
-                callback.error(resultCode)
+                callback.error(resultCode);
               }
             } else if (resultCode == Activity.RESULT_CANCELED) {
 
