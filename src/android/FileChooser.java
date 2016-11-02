@@ -4,6 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.util.Base64;
+import android.content.Context;
+import android.content.ContentResolver;
+import java.io.FileReader;
+import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.lang.Exception;
 
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CallbackContext;
@@ -49,24 +56,37 @@ public class FileChooser extends CordovaPlugin {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if (requestCode == PICK_FILE_REQUEST && callback != null) {
-
             if (resultCode == Activity.RESULT_OK) {
-
+              try{
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                Context context= this.cordova.getActivity().getApplicationContext();
+                ContentResolver cr = context.getContentResolver();
                 Uri uri = data.getData();
-
-                if (uri != null) {
-
-                    Log.w(TAG, uri.toString());
-                    callback.success(uri.toString());
-
-                } else {
-
-                    callback.error("File uri was null");
-
+                String mimeType = cr.getType(uri);
+                File file = new File(uri);
+                FileReader reader = new FileReader(file);
+                final int BUFFER_SIZE = 8192;
+                int offset = 0;
+                int chunk = 8192
+                byte[] buffer = new byte[BUFFER_SIZE];
+                for(;;){
+                  int bytesRead = reader.read(buffer, offset, chunk);
+                  if (bytesRead <= 0) {
+                    break;
+                  }
+                  os.write(buffer, 0, bytesRead);
+                  offset = chunk;
+                  chunk += bytesRead;
                 }
 
+                byte[] base64 = Base64.encode(os.toByteArray(), Base64.NO_WRAP);
+                String s = "data:" + mimeType + ";base64," + new String(base64, "US-ASCII");
+
+                callback.success(file.getName(), s)
+              }catch(Exception e){
+                callback.error(resultCode)
+              }
             } else if (resultCode == Activity.RESULT_CANCELED) {
 
                 // TODO NO_RESULT or error callback?
