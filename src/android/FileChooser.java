@@ -17,6 +17,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FileChooser extends CordovaPlugin {
 
@@ -82,8 +83,10 @@ public class FileChooser extends CordovaPlugin {
 
                 byte[] base64 = Base64.encode(os.toByteArray(), Base64.NO_WRAP);
                 String s = "data:" + mimeType + ";base64," + new String(base64, "US-ASCII");
-
-                callback.success(file.getName(), s);
+                JSONObject jsonObj = new JSONObject();
+                jsonObj.put("filename", file.getName());
+                jsonObj.put("data", s);
+                callback.success(jsonObj);
               }catch(Exception e){
                 callback.error(resultCode);
               }
