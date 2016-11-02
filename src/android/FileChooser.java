@@ -15,6 +15,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONObject;
+import org.json.JSONException;
 
 public class FileChooser extends CordovaPlugin {
 
@@ -52,7 +53,7 @@ public class FileChooser extends CordovaPlugin {
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
         pluginResult.setKeepCallback(true);
-        callbackContext.sendPluginResult(pluginResult);
+        callback.sendPluginResult(pluginResult);
     }
 
     @Override
@@ -62,7 +63,11 @@ public class FileChooser extends CordovaPlugin {
               try{
                 Uri uri = data.getData();
                 ContentFilesystem cf = new ContentFilesystem(this.webView.getContext(), this.webView.getResourceApi());
+                JSONObject fs = new JSONObject();
+                fs.put("name", cf.name);
+                fs.put("root", cf.getRootEntry());
                 JSONObject res = cf.makeEntryForNativeUri(uri);
+                res.put("fs", fs);
                 callback.success(res);
               }catch(Exception e){
                 callback.error(resultCode);
