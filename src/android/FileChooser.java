@@ -68,7 +68,7 @@ public class FileChooser extends CordovaPlugin {
                 FileReader reader = new FileReader(file);
                 final int BUFFER_SIZE = 8192;
                 int offset = 0;
-                int chunk = 8192
+                int chunk = 8192;
                 byte[] buffer = new byte[BUFFER_SIZE];
                 for(;;){
                   int bytesRead = reader.read(buffer, offset, chunk);
@@ -83,7 +83,7 @@ public class FileChooser extends CordovaPlugin {
                 byte[] base64 = Base64.encode(os.toByteArray(), Base64.NO_WRAP);
                 String s = "data:" + mimeType + ";base64," + new String(base64, "US-ASCII");
 
-                callback.success(file.getName(), s)
+                callback.success(file.getName(), s);
               }catch(Exception e){
                 callback.error(resultCode);
               }
