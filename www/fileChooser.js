@@ -3,12 +3,11 @@ module.exports = {
       var mySuccess = function(result){
         if (success){
           var fsObj = result.fs;
-          fileSystems.getFs(fsObj.name, function(fs){
-            if (!fs) {
-              fs = new FileSystem(file_system.name, file_system.root);
-            }
+          requestFileSystem(2, 0, function(fs){
             var entry = new FileEntry(result.name, result.fullPath, fs, result.nativeURL);
             success(entry);
+          }, function(err){
+            if (failure) failure(err);
           });
         }
       };
