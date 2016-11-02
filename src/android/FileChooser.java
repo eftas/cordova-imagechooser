@@ -7,7 +7,7 @@ import android.util.Log;
 import android.util.Base64;
 import android.content.Context;
 import android.content.ContentResolver;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.lang.Exception;
@@ -65,14 +65,14 @@ public class FileChooser extends CordovaPlugin {
                 ContentResolver cr = context.getContentResolver();
                 Uri uri = data.getData();
                 String mimeType = cr.getType(uri);
-                File file = new File(uri);
-                FileReader reader = new FileReader(file);
+                File file = new File(uri.getPath());
+                FileInputStream inputStream = new FileInputStream(file);
                 final int BUFFER_SIZE = 8192;
                 int offset = 0;
                 int chunk = 8192;
                 byte[] buffer = new byte[BUFFER_SIZE];
                 for(;;){
-                  int bytesRead = reader.read(buffer, offset, chunk);
+                  int bytesRead = inputStream.read(buffer, offset, chunk);
                   if (bytesRead <= 0) {
                     break;
                   }
