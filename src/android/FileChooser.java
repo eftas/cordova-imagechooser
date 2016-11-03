@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import java.lang.Exception;
+import java.lang.Runnable;
 import java.net.MalformedURLException;
 
 import org.apache.cordova.CordovaArgs;
@@ -24,12 +25,15 @@ public class FileChooser extends CordovaPlugin {
     private static final String ACTION_OPEN = "open";
     private static final int PICK_FILE_REQUEST = 1;
     private CordovaWebView webView;
+    private CordovaInterface cordova;
     CallbackContext callback;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
       super.initialize(cordova, webView);
+
       this.webView = webView;
+      this.cordova = cordova;
     }
 
     @Override
@@ -47,16 +51,20 @@ public class FileChooser extends CordovaPlugin {
       return false;
     }
 
-    public void getLocalFilePathForURL(String url){
-      FileUtils filePlugin = (FileUtils) webView.getPluginManager().getPlugin("File");
-      try {
-        String localPath = filePlugin.filesystemPathForURL(url);
-        callback.success(localPath);
-      }catch(MalformedURLException e){
-        callback.error(e.toString());
-      }catch (Exception e){
-        callback.error(e.toString());
-      }
+    public void getLocalFilePathForURL(final String url){
+      final FileUtils filePlugin = (FileUtils) webView.getPluginManager().getPlugin("File");
+      cordova.getThreadPool().execute(new Runnable(){
+        public void run(){
+          try {
+            String localPath = filePlugin.filesystemPathForURL(url);
+            callback.success(localPath);
+          }catch(MalformedURLException e){
+            callback.error(e.toString());
+          }catch (Exception e){
+            callback.error(e.toString());
+          }
+        }
+      });
     }
 
     public void chooseFile() {
