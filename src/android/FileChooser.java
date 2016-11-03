@@ -60,18 +60,20 @@ public class FileChooser extends CordovaPlugin {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_FILE_REQUEST && callback != null) {
             if (resultCode == Activity.RESULT_OK) {
-              try{
-                Uri uri = data.getData();
-                ContentFilesystem cf = new ContentFilesystem(this.webView.getContext(), this.webView.getResourceApi());
-                JSONObject fs = new JSONObject();
-                fs.put("name", cf.name);
-                fs.put("root", cf.getRootEntry());
-                JSONObject res = cf.makeEntryForNativeUri(uri);
-                res.put("fs", fs);
-                callback.success(res);
-              }catch(Exception e){
-                callback.error(resultCode);
-              }
+              Uri uri = data.getData();
+              callback.success(uri.toString());
+              // try{
+              //   Uri uri = data.getData();
+              //   ContentFilesystem cf = new ContentFilesystem(this.webView.getContext(), this.webView.getResourceApi());
+              //   JSONObject fs = new JSONObject();
+              //   fs.put("name", cf.name);
+              //   fs.put("root", cf.getRootEntry());
+              //   JSONObject res = cf.makeEntryForNativeUri(uri);
+              //   res.put("fs", fs);
+              //   callback.success(res);
+              // }catch(Exception e){
+              //   callback.error(resultCode);
+              // }
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // TODO NO_RESULT or error callback?
                 PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);

@@ -2,11 +2,10 @@ module.exports = {
     open: function (success, failure) {
       var mySuccess = function(result){
         if (success){
-          requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs){
-            var entry = new FileEntry(result.name, result.fullPath, fs, result.nativeURL);
+          resolveLocalFileSystemURL(result, function(entry){
             success(entry);
           }, function(err){
-            if (failure) failure(err);
+            if(failure) failure(err);
           });
         }
       };
