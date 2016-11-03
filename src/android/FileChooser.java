@@ -5,14 +5,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import java.lang.Exception;
+import java.net.MalformedURLException;
 
-import org.apache.cordova.file.ContentFilesystem;
 import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.file.FileUtils;
 import org.apache.cordova.PluginResult;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -38,7 +39,24 @@ public class FileChooser extends CordovaPlugin {
           chooseFile();
           return true;
       }
+
+      if (action.equals("getFileSystemPath")){
+        getLocalFilePathForURL(args.getString(0));
+        return true;
+      }
       return false;
+    }
+
+    public void getLocalFilePathForURL(String url){
+      FileUtils filePlugin = (FileUtils) webView.getPluginManager().getPlugin("File");
+      try {
+        String localPath = filePlugin.filesystemPathForURL(url);
+        callback.success(localPath);
+      }catch(MalformedURLException e){
+        callback.error(e.toString());
+      }catch (Exception e){
+        callback.error(e.toString());
+      }
     }
 
     public void chooseFile() {
@@ -62,18 +80,6 @@ public class FileChooser extends CordovaPlugin {
             if (resultCode == Activity.RESULT_OK) {
               Uri uri = data.getData();
               callback.success(uri.toString());
-              // try{
-              //   Uri uri = data.getData();
-              //   ContentFilesystem cf = new ContentFilesystem(this.webView.getContext(), this.webView.getResourceApi());
-              //   JSONObject fs = new JSONObject();
-              //   fs.put("name", cf.name);
-              //   fs.put("root", cf.getRootEntry());
-              //   JSONObject res = cf.makeEntryForNativeUri(uri);
-              //   res.put("fs", fs);
-              //   callback.success(res);
-              // }catch(Exception e){
-              //   callback.error(resultCode);
-              // }
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // TODO NO_RESULT or error callback?
                 PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
