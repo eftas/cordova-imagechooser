@@ -14,5 +14,9 @@ module.exports = {
         if (failure) failure(err);
       }
       cordova.exec(mySuccess, myFailure, "FileChooser", "open", []);
+    },
+
+    getFileSystemPath: function(path, success, failure) {
+      cordova.exec(success, failure, "FileChooser", "getFileSystemPath" [path]);
     }
 };
