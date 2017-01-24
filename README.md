@@ -1,4 +1,4 @@
-Cordova FileChooser Plugin
+Cordova ImageChooser Plugin
 
 Requires Cordova >= 2.8.0
 
